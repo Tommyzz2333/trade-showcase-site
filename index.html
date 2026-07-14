@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="面向大宗商品贸易的 AI 审查与尽调助手：审单、尽职调查、合规筛查、资金与信用证审查，中英双语。">
+<meta name="theme-color" content="#0B1310">
+<meta property="og:type" content="website">
+<meta property="og:title" content="大宗商品贸易智能审查 · Commodity Trade Intelligence">
+<meta property="og:description" content="签约前把一笔大宗交易的风险看清楚——AI 审查、尽调、合规与资金测算。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22%3E%3Ctext%20y=%22.9em%22%20font-size=%2290%22%3E&#9878;&#65039;%3C/text%3E%3C/svg%3E">
+<title>澶у畻鍟嗗搧璐告槗鏅鸿兘瀹℃煡 路 Commodity Trade Intelligence</title>
+
+<style>
+  :root {
+    --paper: #EBEDE7;
+    --surface: #F5F6F1;
+    --surface-2: #EFF1EA;
+    --ink: #101E1A;
+    --ink-2: #2A3A34;
+    --muted: #57645D;
+    --faint: #8B968E;
+    --line: #D2D7CD;
+    --line-strong: #BEC5B8;
+    --accent: #8A6A22;
+    --gold-line: #9A7526;
+    --teal: #123A34;
+    --v-approve: #1F7A5C;
+    --v-cond: #A9801F;
+    --v-hold: #BE571C;
+    --v-reject: #9A2A23;
+    --maxw: 1180px;
+    --serif: Georgia, "Times New Roman", "Songti SC", "Noto Serif SC", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --mono: "SFMono-Regular", "Cascadia Code", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #0B1310; --surface: #101A15; --surface-2: #13201A;
+      --ink: #ECEDE5; --ink-2: #CCD3CB; --muted: #93A099; --faint: #6C776F;
+      --line: #21302A; --line-strong: #2E3E37;
+      --accent: #C9A24A; --gold-line: #C9A24A; --teal: #6FB7AE;
+      --v-approve: #47B58A; --v-cond: #D3AC4E; --v-hold: #E28644; --v-reject: #D95951;
+    }
+  }
+  :root[data-theme="light"] {
+    --paper:#EBEDE7; --surface:#F5F6F1; --surface-2:#EFF1EA;
+    --ink:#101E1A; --ink-2:#2A3A34; --muted:#57645D; --faint:#8B968E;
+    --line:#D2D7CD; --line-strong:#BEC5B8; --accent:#8A6A22; --gold-line:#9A7526; --teal:#123A34;
+    --v-approve:#1F7A5C; --v-cond:#A9801F; --v-hold:#BE571C; --v-reject:#9A2A23;
+  }
+  :root[data-theme="dark"] {
+    --paper:#0B1310; --surface:#101A15; --surface-2:#13201A;
+    --ink:#ECEDE5; --ink-2:#CCD3CB; --muted:#93A099; --faint:#6C776F;
+    --line:#21302A; --line-strong:#2E3E37; --accent:#C9A24A; --gold-line:#C9A24A; --teal:#6FB7AE;
+    --v-approve:#47B58A; --v-cond:#D3AC4E; --v-hold:#E28644; --v-reject:#D95951;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  .page {
+    position: relative;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  /* film grain */
+  .page::after {
+    content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .028;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+  .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(22px, 5.2vw, 64px); }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: .7rem; letter-spacing: .24em;
+    text-transform: uppercase; color: var(--accent); margin: 0;
+  }
+  h1, h2, h3, h4 { font-family: var(--serif); font-weight: 600; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  a { color: inherit; }
+
+  /* ---- top bar ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 55;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px clamp(22px, 5.2vw, 64px);
+    background: color-mix(in srgb, var(--paper) 82%, transparent);
+    backdrop-filter: blur(10px) saturate(1.1);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: baseline; gap: .7rem; font-family: var(--serif); }
+  .brand .mark { font-size: 1.2rem; font-weight: 600; letter-spacing: .005em; }
+  .brand .mark b { color: var(--accent); font-weight: 600; }
+  .brand .rule { width: 26px; height: 1px; background: var(--line-strong); }
+  .brand .sub { font-family: var(--mono); font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); }
+  .langbtn {
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .1em;
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .5rem .9rem; cursor: pointer; color: var(--ink);
+    background: transparent; border: 1px solid var(--line-strong); border-radius: 2px;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .langbtn:hover { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 7%, transparent); }
+  .langbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .langbtn .dot { width: 5px; height: 5px; background: var(--accent); transform: rotate(45deg); }
+
+  /* ---- hero ---- */
+  .hero { position: relative; padding: clamp(76px, 15vh, 168px) 0 clamp(56px, 10vh, 104px); overflow: hidden; }
+  .hero .guilloche {
+    position: absolute; top: 50%; right: -14%; transform: translateY(-50%);
+    width: min(760px, 82vw); height: min(760px, 82vw); z-index: 0; pointer-events: none;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(70% 60% at 12% 8%, color-mix(in srgb, var(--teal) 9%, transparent), transparent 60%);
+  }
+  .hero .wrap { position: relative; z-index: 1; }
+  .kicker { display: inline-flex; align-items: center; gap: .8rem; margin-bottom: 1.7rem; }
+  .kicker .ln { width: 42px; height: 1px; background: var(--accent); }
+  .hero h1 {
+    font-size: clamp(2.7rem, 7vw, 5.1rem); line-height: 1.02; margin: 0 0 1.5rem;
+    max-width: 17ch; letter-spacing: -.018em;
+  }
+  .hero h1 .em { color: var(--accent); font-style: italic; }
+  .lede { font-size: clamp(1.08rem, 1.75vw, 1.32rem); color: var(--ink-2); max-width: 44ch; margin: 0; line-height: 1.62; }
+  .hero-meta {
+    margin-top: 2.8rem; display: flex; flex-wrap: wrap; gap: 1rem 2.4rem;
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; color: var(--muted);
+    border-top: 1px solid var(--line); padding-top: 1.5rem; max-width: 58ch;
+  }
+  .hero-meta span { display: inline-flex; align-items: center; gap: .55rem; }
+  .hero-meta span::before { content: ""; width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); }
+
+  /* ---- bands ---- */
+  .band { position: relative; padding: clamp(64px, 11vh, 128px) 0; }
+  .band + .band { border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: flex-start; gap: clamp(1.2rem, 4vw, 3rem); margin-bottom: clamp(2.4rem, 6vh, 4rem); flex-wrap: wrap; }
+  .sec-num { font-family: var(--serif); font-style: italic; font-size: clamp(2rem, 4vw, 3rem); color: var(--accent); line-height: 1; opacity: .9; min-width: 2ch; }
+  .sec-head .txt { flex: 1 1 320px; }
+  .sec-head .eyebrow { margin-bottom: 1rem; }
+  .sec-head h2 { font-size: clamp(1.8rem, 3.6vw, 2.7rem); line-height: 1.1; margin: 0 0 .8rem; letter-spacing: -.01em; }
+  .sec-head .txt > p { color: var(--muted); font-size: 1.03rem; margin: 0; max-width: 54ch; }
+
+  /* ---- capabilities: editorial index ---- */
+  .cap-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(2rem, 5vw, 4.5rem); border-top: 1px solid var(--line-strong); }
+  .cap {
+    display: grid; grid-template-columns: auto 1fr; gap: 0 1.3rem;
+    padding: 1.7rem 0; border-bottom: 1px solid var(--line); position: relative;
+  }
+  .cap .idx { font-family: var(--mono); font-size: .72rem; letter-spacing: .1em; color: var(--faint); padding-top: .35rem; transition: color .2s; }
+  .cap h3 { font-size: 1.24rem; margin: 0 0 .4rem; line-height: 1.25; transition: color .2s; }
+  .cap p { grid-column: 2; margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.55; }
+  .cap::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--accent); transition: width .35s ease; }
+  .cap:hover::after { width: 100%; }
+  .cap:hover .idx { color: var(--accent); }
+  .cap:hover h3 { color: var(--accent); }
+
+  /* ---- process ---- */
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; }
+  .step { position: relative; padding: 2.5rem 1.4rem 0 0; border-top: 1.5px solid var(--line-strong); }
+  .step .num { position: absolute; top: 0; left: 0; transform: translateY(-50%); font-family: var(--serif); font-style: italic; font-variant-numeric: tabular-nums; font-size: 1.25rem; color: var(--accent); background: var(--paper); padding-right: .7rem; }
+  .step .node { position: absolute; top: -4.5px; left: 0; width: 8px; height: 8px; background: var(--accent); transform: rotate(45deg); }
+  .step h3 { font-size: 1.14rem; margin: 0 0 .55rem; }
+  .step p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.5; }
+
+  /* ---- verdict certificate ---- */
+  .cert { position: relative; background: var(--surface); border: 1px solid var(--line-strong); padding: clamp(2rem, 5vw, 3.4rem); overflow: hidden; box-shadow: 0 1px 0 var(--line), 0 26px 60px -30px rgba(16,30,26,.4); }
+  .cert::before { content: ""; position: absolute; inset: 10px; border: 1px solid var(--line); pointer-events: none; }
+  .cert .seal { position: absolute; top: -60px; right: -60px; width: 300px; height: 300px; opacity: .5; pointer-events: none; }
+  .cert-inner { position: relative; z-index: 1; }
+  .cert .eyebrow { margin-bottom: 1.1rem; }
+  .cert .cap-line { font-family: var(--serif); font-size: clamp(1.4rem, 2.8vw, 2.1rem); margin: 0 0 2rem; line-height: 1.24; max-width: 24ch; }
+  .chips { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .chip { padding: 1.4rem 1.3rem 1.3rem; border-top: 2px solid var(--cc); position: relative; }
+  .chip + .chip { border-left: 1px solid var(--line); }
+  .chip .lab { font-family: var(--serif); font-weight: 600; font-size: 1.12rem; color: var(--cc); display: block; }
+  .chip .en { font-family: var(--mono); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); display: block; margin: .35rem 0 .55rem; }
+  .chip .desc { font-size: .84rem; color: var(--muted); line-height: 1.5; }
+  .chip.approve { --cc: var(--v-approve); }
+  .chip.cond { --cc: var(--v-cond); }
+  .chip.hold { --cc: var(--v-hold); }
+  .chip.reject { --cc: var(--v-reject); }
+
+  /* ---- principles ---- */
+  .principles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; border: 1px solid var(--line); }
+  .principle { padding: clamp(1.7rem, 3vw, 2.3rem); position: relative; }
+  .principle:nth-child(1), .principle:nth-child(2) { border-bottom: 1px solid var(--line); }
+  .principle:nth-child(odd) { border-right: 1px solid var(--line); }
+  .principle .k { font-family: var(--mono); font-size: .66rem; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); display: inline-flex; align-items: center; gap: .55rem; margin-bottom: 1rem; }
+  .principle .k::before { content: ""; width: 16px; height: 1px; background: var(--accent); }
+  .principle h3 { font-size: 1.3rem; margin: 0 0 .55rem; }
+  .principle p { margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.56; }
+
+  /* ---- close ---- */
+  .close { text-align: center; padding: clamp(72px, 13vh, 136px) 0 clamp(56px, 9vh, 96px); }
+  .close .eyebrow { margin-bottom: 1.3rem; }
+  .close h2 { font-size: clamp(2rem, 4.4vw, 3.1rem); margin: 0 auto 1.1rem; max-width: 20ch; line-height: 1.1; letter-spacing: -.012em; }
+  .close h2 .em { color: var(--accent); font-style: italic; }
+  .close > .wrap > p { color: var(--muted); max-width: 42ch; margin: 0 auto; font-size: 1.05rem; }
+
+  /* ---- colophon ---- */
+  .colophon { border-top: 1px solid var(--line-strong); background: var(--surface-2); }
+  .colo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.6rem, 4vw, 3rem); padding: clamp(2.6rem, 5vh, 3.6rem) 0; }
+  .colo .lbl { font-family: var(--mono); font-size: .64rem; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 0 0 .7rem; }
+  .colo .v1 { font-family: var(--serif); font-size: 1.28rem; color: var(--ink); margin: 0 0 .3rem; line-height: 1.3; }
+  .colo .v1.sec { font-size: 1.04rem; color: var(--ink-2); margin: .2rem 0 .3rem; display: inline-flex; align-items: baseline; gap: .5rem; }
+  .colo .v1.sec::before { content: ""; width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); display: inline-block; }
+  .colo .v2 { font-size: .9rem; color: var(--muted); margin: 0; line-height: 1.5; }
+  .colo a.mail { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); padding-bottom: 1px; transition: border-color .2s; font-family: var(--mono); font-size: .95rem; letter-spacing: .01em; }
+  .colo a.mail:hover { border-color: var(--accent); }
+  footer.foot { border-top: 1px solid var(--line); }
+  footer.foot .wrap { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; align-items: center; justify-content: space-between; padding-top: 1.7rem; padding-bottom: 2rem; }
+  footer.foot .fnote { font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; color: var(--faint); }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 900px) {
+    .cap-grid { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr 1fr; gap: 1.6rem 1.4rem; }
+    .chips { grid-template-columns: 1fr 1fr; }
+    .chip:nth-child(3), .chip:nth-child(4) { border-top: 2px solid var(--cc); }
+    .chip:nth-child(odd) { border-left: 0; }
+    .chip:nth-child(even) { border-left: 1px solid var(--line); }
+    .colo-grid { grid-template-columns: 1fr; gap: 1.8rem; }
+  }
+  @media (max-width: 560px) {
+    .flow { grid-template-columns: 1fr; }
+    .chips { grid-template-columns: 1fr; }
+    .chip { border-left: 0 !important; }
+    .principles { grid-template-columns: 1fr; }
+    .principle:nth-child(odd) { border-right: 0; }
+    .principle:nth-child(3) { border-bottom: 1px solid var(--line); }
+    .brand .sub, .brand .rule { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .cap::after { transition: none; }
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark" data-zh="澶у畻鍟嗗搧璐告槗 <b>鏅鸿兘瀹℃煡</b>" data-en="Commodity Trade <b>Intelligence</b>">澶у畻鍟嗗搧璐告槗 <b>鏅鸿兘瀹℃煡</b></span>
+      <span class="rule"></span>
+      <span class="sub" data-zh="瀹℃煡 路 灏借皟 路 椋庢帶" data-en="Review 路 DD 路 Risk">瀹℃煡 路 灏借皟 路 椋庢帶</span>
+    </div>
+    <button class="langbtn" id="langbtn" type="button" aria-label="Switch language">
+      <span class="dot"></span><span id="langlabel">EN</span>
+    </button>
+  </header>
+
+  <section class="hero">
+    <canvas class="guilloche" id="g-hero" aria-hidden="true"></canvas>
+    <div class="wrap">
+      <span class="kicker reveal"><span class="ln"></span><span class="eyebrow" data-zh="绛剧害鍓嶇殑涓€鍙屼笓涓氱溂鐫? data-en="A professional eye before you sign">绛剧害鍓嶇殑涓€鍙屼笓涓氱溂鐫?/span></span>
+      <h1 class="reveal" data-zh="鎶婁竴绗斿ぇ瀹椾氦鏄撶殑椋庨櫓锛屽湪绛剧害鍓?span class='em'>鐪嬫竻妤?/span>銆? data-en="See the risk in a bulk-commodity deal 鈥?<span class='em'>before you sign</span>.">鎶婁竴绗斿ぇ瀹椾氦鏄撶殑椋庨櫓锛屽湪绛剧害鍓?span class="em">鐪嬫竻妤?/span>銆?/h1>
+      <p class="lede reveal" data-zh="闈㈠悜澶у畻鍟嗗搧璐告槗鐨?AI 鍔╂墜锛氳鏉愭枡銆佹牳浜嬪疄銆佹煡瀵规墜銆佺畻璧勯噾銆佺粰缁撹鈥斺€旀妸涓€浠戒唤鍚堝悓涓庡崟鎹紝鍙樻垚涓€涓兘鎷嶆澘鐨勫垽鏂€? data-en="An AI assistant for bulk-commodity trade: it reads your materials, verifies the facts, vets the counterparty, models the funding, and delivers a verdict 鈥?turning stacks of contracts and documents into a decision you can act on.">闈㈠悜澶у畻鍟嗗搧璐告槗鐨?AI 鍔╂墜锛氳鏉愭枡銆佹牳浜嬪疄銆佹煡瀵规墜銆佺畻璧勯噾銆佺粰缁撹鈥斺€旀妸涓€浠戒唤鍚堝悓涓庡崟鎹紝鍙樻垚涓€涓兘鎷嶆澘鐨勫垽鏂€?/p>
+      <div class="hero-meta reveal">
+        <span data-zh="鐭夸骇涓庨噾灞炶锤鏄? data-en="Ores &amp; metals trade">鐭夸骇涓庨噾灞炶锤鏄?/span>
+        <span data-zh="瀹″崟 路 灏借皟 路 鍚堣" data-en="Review 路 DD 路 compliance">瀹″崟 路 灏借皟 路 鍚堣</span>
+        <span data-zh="璧勯噾涓庝俊鐢ㄨ瘉" data-en="Funding &amp; letters of credit">璧勯噾涓庝俊鐢ㄨ瘉</span>
+        <span data-zh="鍏ㄧ▼璺熻繘" data-en="End-to-end tracking">鍏ㄧ▼璺熻繘</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-num">I</div>
+        <div class="txt">
+          <p class="eyebrow" data-zh="鑳藉仛浠€涔? data-en="What it does">鑳藉仛浠€涔?/p>
+          <h2 data-zh="涓€绗斾氦鏄撶殑姣忎竴闈紝閮芥湁浜烘浛浣犵湅杩? data-en="Every side of a deal, looked over for you">涓€绗斾氦鏄撶殑姣忎竴闈紝閮芥湁浜烘浛浣犵湅杩?/h2>
+          <p data-zh="浠庡悎鍚屾潯娆惧埌鑸硅埗璐ф潈锛屼粠瀵规墜鑳屾櫙鍒拌祫閲戝帇鍔涒€斺€旇鐩栧ぇ瀹楄锤鏄撻噷鏈€瀹规槗鍑轰簨鐨勭幆鑺傘€? data-en="From contract terms to cargo title, from counterparty background to funding pressure 鈥?covering where bulk-commodity trade most often goes wrong.">浠庡悎鍚屾潯娆惧埌鑸硅埗璐ф潈锛屼粠瀵规墜鑳屾櫙鍒拌祫閲戝帇鍔涒€斺€旇鐩栧ぇ瀹楄锤鏄撻噷鏈€瀹规槗鍑轰簨鐨勭幆鑺傘€?/p>
+        </div>
+      </div>
+      <div class="cap-grid reveal">
+        <div class="cap"><span class="idx">01</span><div><h3 data-zh="浜ゆ槗瀹℃煡" data-en="Trade Review">浜ゆ槗瀹℃煡</h3></div><p data-zh="閫氳浜ゆ槗鏉℃涓庢暣濂楀崟鎹紝鎸囧嚭椋庨櫓鐐癸紝钀藉埌涓€涓槑纭粨璁恒€? data-en="Reads the full deal and its documents, flags the risks, and lands on a clear verdict.">閫氳浜ゆ槗鏉℃涓庢暣濂楀崟鎹紝鎸囧嚭椋庨櫓鐐癸紝钀藉埌涓€涓槑纭粨璁恒€?/p></div>
+        <div class="cap"><span class="idx">02</span><div><h3 data-zh="灏借亴璋冩煡" data-en="Due Diligence">灏借亴璋冩煡</h3></div><p data-zh="鏍告煡瀵规墜鏂圭殑韬唤銆佺粡钀ョ姸鍐碉紝浠ュ強鏄惁鐪熸湁瀵瑰緱涓婄殑璐告槗璁板綍銆? data-en="Verifies the counterparty's identity, operations, and whether the trade history actually checks out.">鏍告煡瀵规墜鏂圭殑韬唤銆佺粡钀ョ姸鍐碉紝浠ュ強鏄惁鐪熸湁瀵瑰緱涓婄殑璐告槗璁板綍銆?/p></div>
+        <div class="cap"><span class="idx">03</span><div><h3 data-zh="鍗曟嵁鏍告煡" data-en="Document Consistency">鍗曟嵁鏍告煡</h3></div><p data-zh="璺ㄥ悎鍚屻€佸彂绁ㄣ€佹彁鍗曘€佹楠岃瘉涔︾瓑閫愰」姣斿鍏抽敭瀛楁锛屾壘鍑哄墠鍚庣煕鐩俱€? data-en="Cross-checks key fields across contracts, invoices, bills of lading and certificates to surface contradictions.">璺ㄥ悎鍚屻€佸彂绁ㄣ€佹彁鍗曘€佹楠岃瘉涔︾瓑閫愰」姣斿鍏抽敭瀛楁锛屾壘鍑哄墠鍚庣煕鐩俱€?/p></div>
+        <div class="cap"><span class="idx">04</span><div><h3 data-zh="鍚堣绛涙煡" data-en="Compliance Screening">鍚堣绛涙煡</h3></div><p data-zh="瀵圭浉鍏冲叕鍙搞€佽礋璐ｄ汉銆侀摱琛屼笌鑸硅埗鍋氬埗瑁佷笌鍚堣椋庨櫓绛涙煡銆? data-en="Screens the companies, principals, banks and vessels involved against sanctions and compliance risk.">瀵圭浉鍏冲叕鍙搞€佽礋璐ｄ汉銆侀摱琛屼笌鑸硅埗鍋氬埗瑁佷笌鍚堣椋庨櫓绛涙煡銆?/p></div>
+        <div class="cap"><span class="idx">05</span><div><h3 data-zh="璧勯噾娴嬬畻" data-en="Cashflow Analysis">璧勯噾娴嬬畻</h3></div><p data-zh="娴嬬畻璧勯噾鍗犵敤涓庡嘲鍊奸渶姹傦紝鎸夋儏鏅仛鍘嬪姏娴嬭瘯锛岃鐜伴噾娴佸績閲屾湁鏁般€? data-en="Models capital tied up and peak funding, stress-tests it across scenarios, so the cashflow holds no surprises.">娴嬬畻璧勯噾鍗犵敤涓庡嘲鍊奸渶姹傦紝鎸夋儏鏅仛鍘嬪姏娴嬭瘯锛岃鐜伴噾娴佸績閲屾湁鏁般€?/p></div>
+        <div class="cap"><span class="idx">06</span><div><h3 data-zh="淇＄敤璇佸鏌? data-en="LC Review">淇＄敤璇佸鏌?/h3></div><p data-zh="瀹′俊鐢ㄨ瘉鏉℃锛屽苟涓庣幇鏈夊崟鎹€愰」瀵圭収锛屾彁鍓嶅彂鐜版綔鍦ㄤ笉绗︾偣銆? data-en="Reviews letter-of-credit terms and matches them against your documents, catching discrepancies early.">瀹′俊鐢ㄨ瘉鏉℃锛屽苟涓庣幇鏈夊崟鎹€愰」瀵圭収锛屾彁鍓嶅彂鐜版綔鍦ㄤ笉绗︾偣銆?/p></div>
+        <div class="cap"><span class="idx">07</span><div><h3 data-zh="璐ф潈涓庤埞鑸? data-en="Title &amp; Vessel">璐ф潈涓庤埞鑸?/h3></div><p data-zh="鍘樻竻璋佺湡姝ｆ帶鍒剁潃璐э紝鏍告煡鑸硅埗鑳屾櫙涓庤埅杩愮幆鑺傜殑椋庨櫓銆? data-en="Clarifies who really controls the cargo, and vets the vessel background and shipping-side risk.">鍘樻竻璋佺湡姝ｆ帶鍒剁潃璐э紝鏍告煡鑸硅埗鑳屾櫙涓庤埅杩愮幆鑺傜殑椋庨櫓銆?/p></div>
+        <div class="cap"><span class="idx">08</span><div><h3 data-zh="鏂囦欢璧疯崏" data-en="Document Drafting">鏂囦欢璧疯崏</h3></div><p data-zh="鎸夎鑼冩牸寮忚捣鑽夎浠峰嚱銆佹剰鍚戜功涓庡悎鍚岃崏绋匡紝涓嫳鍙岃鍙€夈€? data-en="Drafts inquiries, letters of intent and contract drafts in standard form, bilingual on request.">鎸夎鑼冩牸寮忚捣鑽夎浠峰嚱銆佹剰鍚戜功涓庡悎鍚岃崏绋匡紝涓嫳鍙岃鍙€夈€?/p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-num">II</div>
+        <div class="txt">
+          <p class="eyebrow" data-zh="鎬庝箞杩愪綔" data-en="How it works">鎬庝箞杩愪綔</p>
+          <h2 data-zh="浠庝竴鍫嗘潗鏂欙紝鍒颁竴涓彲鎵ц鐨勫垽鏂? data-en="From a pile of materials to a decision you can act on">浠庝竴鍫嗘潗鏂欙紝鍒颁竴涓彲鎵ц鐨勫垽鏂?/h2>
+          <p data-zh="浜斾釜鐜妭锛屼竴鏉＄嚎璧颁笅鏉ャ€備綘缁欐潗鏂欙紝瀹冩妸杩囩▼璧板畬锛岀粨璁哄拰渚濇嵁涓€璧蜂氦鍥炪€? data-en="Five stages, one clear line. You hand over the materials; it runs the process and returns the verdict together with the reasoning.">浜斾釜鐜妭锛屼竴鏉＄嚎璧颁笅鏉ャ€備綘缁欐潗鏂欙紝瀹冩妸杩囩▼璧板畬锛岀粨璁哄拰渚濇嵁涓€璧蜂氦鍥炪€?/p>
+        </div>
+      </div>
+      <div class="flow reveal">
+        <div class="step"><span class="node"></span><span class="num">01</span><h3 data-zh="鎻愪氦鏉愭枡" data-en="Submit">鎻愪氦鏉愭枡</h3><p data-zh="鍚堝悓銆佸崟鎹€佸線鏉ラ偖浠垛€斺€旀枃瀛椼€丳DF銆乄ord銆丒xcel銆佸浘鐗囬兘鑳借銆? data-en="Contracts, documents, emails 鈥?text, PDF, Word, Excel and images all accepted.">鍚堝悓銆佸崟鎹€佸線鏉ラ偖浠垛€斺€旀枃瀛椼€丳DF銆乄ord銆丒xcel銆佸浘鐗囬兘鑳借銆?/p></div>
+        <div class="step"><span class="node"></span><span class="num">02</span><h3 data-zh="鎻愬彇浜嬪疄" data-en="Extract">鎻愬彇浜嬪疄</h3><p data-zh="鎶婃暎钀藉湪鍚勫鐨勪氦鏄撹绱狅紝鏁寸悊鎴愪竴浠芥竻妤氥€佸彲鏍稿鐨勪簨瀹炴竻鍗曘€? data-en="Pulls the deal's details scattered across sources into one clear, checkable set of facts.">鎶婃暎钀藉湪鍚勫鐨勪氦鏄撹绱狅紝鏁寸悊鎴愪竴浠芥竻妤氥€佸彲鏍稿鐨勪簨瀹炴竻鍗曘€?/p></div>
+        <div class="step"><span class="node"></span><span class="num">03</span><h3 data-zh="澶氱淮鏍告煡" data-en="Verify">澶氱淮鏍告煡</h3><p data-zh="椋庢帶銆佸敖璋冦€佸悎瑙勩€佽祫閲戝嚑涓柟鍚戝苟琛屾牳鏌ワ紝浜ゅ弶楠岃瘉銆? data-en="Runs risk, due-diligence, compliance and funding checks in parallel and cross-validates.">椋庢帶銆佸敖璋冦€佸悎瑙勩€佽祫閲戝嚑涓柟鍚戝苟琛屾牳鏌ワ紝浜ゅ弶楠岃瘉銆?/p></div>
+        <div class="step"><span class="node"></span><span class="num">04</span><h3 data-zh="鍑哄叿鎶ュ憡" data-en="Report">鍑哄叿鎶ュ憡</h3><p data-zh="缁欏嚭鍒嗙骇缁撹銆佹敮鎾戜緷鎹紝浠ュ強寤鸿鐨勪笅涓€姝ュ姩浣溿€? data-en="Delivers a graded verdict, the evidence behind it, and recommended next steps.">缁欏嚭鍒嗙骇缁撹銆佹敮鎾戜緷鎹紝浠ュ強寤鸿鐨勪笅涓€姝ュ姩浣溿€?/p></div>
+        <div class="step"><span class="node"></span><span class="num">05</span><h3 data-zh="鍏ㄧ▼璺熻繘" data-en="Follow-through">鍏ㄧ▼璺熻繘</h3><p data-zh="鎸変氦鏄撻樁娈垫寔缁窡韪紝鍏冲崟涔嬪悗澶嶇洏锛屾妸缁忛獙娌夋穩涓嬫潵銆? data-en="Tracks the deal stage by stage and reviews it after closing, so the lessons stick.">鎸変氦鏄撻樁娈垫寔缁窡韪紝鍏冲崟涔嬪悗澶嶇洏锛屾妸缁忛獙娌夋穩涓嬫潵銆?/p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="cert reveal">
+        <canvas class="seal" id="g-seal" aria-hidden="true"></canvas>
+        <div class="cert-inner">
+          <p class="eyebrow" data-zh="III 路 缁撹娓呮" data-en="III 路 A clear verdict">III 路 缁撹娓呮</p>
+          <p class="cap-line" data-zh="涓嶇粰妯℃１涓ゅ彲鐨勨€滅湅鎯呭喌鈥濃€斺€旀瘡涓€绗旈兘钀藉埌涓€涓槑纭粨璁恒€? data-en="No wishy-washy 鈥渋t depends鈥?鈥?every deal lands on one clear verdict.">涓嶇粰妯℃１涓ゅ彲鐨勨€滅湅鎯呭喌鈥濃€斺€旀瘡涓€绗旈兘钀藉埌涓€涓槑纭粨璁恒€?/p>
+          <div class="chips">
+            <div class="chip approve"><span class="lab" data-zh="鏀捐" data-en="Approve">鏀捐</span><span class="en">Approve</span><span class="desc" data-zh="鏉′欢娓呮櫚锛屽彲浠ユ帹杩涖€? data-en="Clean enough to proceed.">鏉′欢娓呮櫚锛屽彲浠ユ帹杩涖€?/span></div>
+            <div class="chip cond"><span class="lab" data-zh="鏈夋潯浠舵斁琛? data-en="Conditional">鏈夋潯浠舵斁琛?/span><span class="en">Conditional</span><span class="desc" data-zh="琛ヤ笂鍓嶆彁锛屾墠鍙互璧般€? data-en="Proceed once conditions are met.">琛ヤ笂鍓嶆彁锛屾墠鍙互璧般€?/span></div>
+            <div class="chip hold"><span class="lab" data-zh="鏆傚仠" data-en="Hold">鏆傚仠</span><span class="en">Hold</span><span class="desc" data-zh="鏈夌枒鐐癸紝鍏堟煡娓呭啀璇淬€? data-en="Open questions 鈥?pause and verify.">鏈夌枒鐐癸紝鍏堟煡娓呭啀璇淬€?/span></div>
+            <div class="chip reject"><span class="lab" data-zh="鍚﹀喅" data-en="Reject">鍚﹀喅</span><span class="en">Reject</span><span class="desc" data-zh="瑙﹀強绾㈢嚎锛屼笉寤鸿鍋氥€? data-en="Hits a red line 鈥?not advised.">瑙﹀強绾㈢嚎锛屼笉寤鸿鍋氥€?/span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="sec-num">IV</div>
+        <div class="txt">
+          <p class="eyebrow" data-zh="涓轰粈涔堝彲淇? data-en="Why trust it">涓轰粈涔堝彲淇?/p>
+          <h2 data-zh="鍍忎竴浣嶈皑鎱庣殑璧勬繁椤鹃棶锛岃€屼笉鏄竴涓粦鐩掑瓙" data-en="Like a careful senior advisor 鈥?not a black box">鍍忎竴浣嶈皑鎱庣殑璧勬繁椤鹃棶锛岃€屼笉鏄竴涓粦鐩掑瓙</h2>
+        </div>
+      </div>
+      <div class="principles reveal">
+        <div class="principle"><span class="k" data-zh="鏈夋嵁" data-en="Traceable">鏈夋嵁</span><h3 data-zh="缁撹鏈夋嵁鍙惊" data-en="Evidence you can trace">缁撹鏈夋嵁鍙惊</h3><p data-zh="姣忎竴鏉″垽鏂兘鏍囨槑鏉ユ簮涓庝緷鎹紝鏌ュ埌浠€涔堣浠€涔堬紝鏌ヤ笉鍒颁篃濡傚疄璇存槑銆? data-en="Every judgment states its source and basis 鈥?it reports what it found, and says so plainly when it found nothing.">姣忎竴鏉″垽鏂兘鏍囨槑鏉ユ簮涓庝緷鎹紝鏌ュ埌浠€涔堣浠€涔堬紝鏌ヤ笉鍒颁篃濡傚疄璇存槑銆?/p></div>
+        <div class="principle"><span class="k" data-zh="鍒嗙骇" data-en="Ranked">鍒嗙骇</span><h3 data-zh="椋庨櫓鍒嗙骇涓嶅惈绯? data-en="Risk, clearly ranked">椋庨櫓鍒嗙骇涓嶅惈绯?/h3><p data-zh="鑷村懡銆侀噸澶с€佹瑕佸垎寰楁竻娓呮妤氾紝鏉愭枡榻愬叏涓嶇瓑浜庡畨鍏紝涓€绁ㄨ嚧鍛藉氨鏄嚧鍛姐€? data-en="Fatal, major and minor are kept clearly apart 鈥?a complete file is not a safe one, and a single fatal flaw stays fatal.">鑷村懡銆侀噸澶с€佹瑕佸垎寰楁竻娓呮妤氾紝鏉愭枡榻愬叏涓嶇瓑浜庡畨鍏紝涓€绁ㄨ嚧鍛藉氨鏄嚧鍛姐€?/p></div>
+        <div class="principle"><span class="k" data-zh="浜轰富" data-en="Human-led">浜轰富</span><h3 data-zh="鍏抽敭鍐崇瓥鐣欑粰浜? data-en="Humans stay in control">鍏抽敭鍐崇瓥鐣欑粰浜?/h3><p data-zh="浠樻銆佹斁璐с€佺绾﹁繖绫诲姩浣滐紝瀹冨彧缁欏缓璁紝鏈€缁堢敱浣犳媿鏉匡紝缁濅笉浠ｄ綘鍑烘墜銆? data-en="For actions like payment, cargo release and signing, it only advises 鈥?you make the call, it never acts for you.">浠樻銆佹斁璐с€佺绾﹁繖绫诲姩浣滐紝瀹冨彧缁欏缓璁紝鏈€缁堢敱浣犳媿鏉匡紝缁濅笉浠ｄ綘鍑烘墜銆?/p></div>
+        <div class="principle"><span class="k" data-zh="瀹堝瘑" data-en="Private">瀹堝瘑</span><h3 data-zh="鏁忔劅淇℃伅涓嶅娉? data-en="Your data stays yours">鏁忔劅淇℃伅涓嶅娉?/h3><p data-zh="浣犳柟鐨勫晢涓氫俊鎭笉浼氳涓婁紶鍒板閮ㄥ钩鍙帮紝鑱旂綉鏍告煡鍙拡瀵逛氦鏄撳鎵嬩笌鍏紑鏁版嵁銆? data-en="Your commercial information is never uploaded to outside platforms; online checks target only the counterparty and public data.">浣犳柟鐨勫晢涓氫俊鎭笉浼氳涓婁紶鍒板閮ㄥ钩鍙帮紝鑱旂綉鏍告煡鍙拡瀵逛氦鏄撳鎵嬩笌鍏紑鏁版嵁銆?/p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="close">
+    <div class="wrap">
+      <p class="eyebrow reveal" data-zh="灏卞埌杩欓噷" data-en="In short">灏卞埌杩欓噷</p>
+      <h2 class="reveal" data-zh="璁╂瘡涓€绗斾氦鏄擄紝閮藉厛杩?span class='em'>杩欎竴鍏?/span>銆? data-en="Let every deal clear <span class='em'>this checkpoint</span> first.">璁╂瘡涓€绗斾氦鏄擄紝閮藉厛杩?span class="em">杩欎竴鍏?/span>銆?/h2>
+      <p class="reveal" data-zh="涓轰腑闂村晢涓庤锤鏄撳晢鑰屽缓鈥斺€旀妸椋庢帶鍋氬湪绛剧害涔嬪墠锛岃€屼笉鏄嚭浜嬩箣鍚庛€? data-en="Built for intermediaries and traders 鈥?putting risk control before the signature, not after the trouble.">涓轰腑闂村晢涓庤锤鏄撳晢鑰屽缓鈥斺€旀妸椋庢帶鍋氬湪绛剧害涔嬪墠锛岃€屼笉鏄嚭浜嬩箣鍚庛€?/p>
+    </div>
+  </section>
+
+  <section class="colophon">
+    <div class="wrap">
+      <div class="colo-grid">
+        <div class="colo">
+          <p class="lbl" data-zh="缂栧埗" data-en="Prepared by">缂栧埗</p>
+          <p class="v1" data-zh="寮犻摥杞? data-en="Zhang Mingxuan">寮犻摥杞?/p>
+          <p class="v2" data-zh="鍒涘浜?路 閲囪喘缁忕悊" data-en="Founder 路 Purchasing Manager">鍒涘浜?路 閲囪喘缁忕悊</p>
+        </div>
+        <div class="colo">
+          <p class="lbl" data-zh="鏈烘瀯" data-en="Firm">鏈烘瀯</p>
+          <p class="v1" data-zh="鏌冲窞鑱旂洓閫氳揪鍜ㄨ鏈夐檺鍏徃" data-en="Liuzhou Liansheng Tongda Consulting Co., Ltd.">鏌冲窞鑱旂洓閫氳揪鍜ㄨ鏈夐檺鍏徃</p>
+          <p class="v1 sec" data-zh="HK Hongyu Resource" data-en="HK Hongyu Resource">HK Hongyu Resource</p>
+          <p class="v2" data-zh="瀹炵墿璐告槗 路 鐭跨墿杩涘彛 路 璐告槗瀹℃煡 路 灏借亴璋冩煡" data-en="Physical trading 路 Mineral import 路 Trade review 路 Due diligence">瀹炵墿璐告槗 路 鐭跨墿杩涘彛 路 璐告槗瀹℃煡 路 灏借亴璋冩煡</p>
+        </div>
+        <div class="colo">
+          <p class="lbl" data-zh="鑱旂郴" data-en="Contact">鑱旂郴</p>
+          <p class="v1"><a class="mail" href="mailto:mingxuan-zhang@foxmail.com">mingxuan-zhang@foxmail.com</a></p>
+          <p class="v2" data-zh="娆㈣繋灏卞叿浣撲氦鏄撳挩璇? data-en="Enquiries on specific deals welcome">娆㈣繋灏卞叿浣撲氦鏄撳挩璇?/p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap">
+      <span class="fnote" data-zh="漏 鏌冲窞鑱旂洓閫氳揪鍜ㄨ鏈夐檺鍏徃" data-en="漏 Liuzhou Liansheng Tongda Consulting Co., Ltd.">漏 鏌冲窞鑱旂洓閫氳揪鍜ㄨ鏈夐檺鍏徃</span>
+      <span class="fnote" data-zh="浠呬綔鑳藉姏灞曠ず 路 涓嶅惈鍐呴儴瀹炵幇" data-en="Capability overview 路 no internals shown">浠呬綔鑳藉姏灞曠ず 路 涓嶅惈鍐呴儴瀹炵幇</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var lang = "zh";
+    var btnLabel = document.getElementById("langlabel");
+    var nodes = document.querySelectorAll("[data-zh]");
+
+    function apply(l) {
+      lang = l;
+      document.documentElement.setAttribute("lang", l === "en" ? "en" : "zh-CN");
+      nodes.forEach(function (el) {
+        var v = l === "en" ? el.getAttribute("data-en") : el.getAttribute("data-zh");
+        if (v != null) el.innerHTML = v;
+      });
+      btnLabel.textContent = l === "en" ? "涓枃" : "EN";
+      document.title = l === "en" ? "Commodity Trade Intelligence" : "澶у畻鍟嗗搧璐告槗鏅鸿兘瀹℃煡";
+    }
+    document.getElementById("langbtn").addEventListener("click", function () {
+      apply(lang === "zh" ? "en" : "zh");
+    });
+
+    // ---- guilloch茅 engraving (certificate-style linework) ----
+    function draw(canvas, layers, loops) {
+      if (!canvas) return;
+      var rect = canvas.getBoundingClientRect();
+      if (rect.width < 2) return;
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      var w = rect.width, h = rect.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      var ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      var cx = w / 2, cy = h / 2, base = Math.min(w, h);
+      var color = getComputedStyle(document.documentElement).getPropertyValue("--gold-line").trim() || "#9A7526";
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 0.7;
+      for (var i = 0; i < layers; i++) {
+        var R = base * 0.46;
+        var r = base * (0.052 + i * (0.055 / layers));
+        var d = base * (0.15 - i * (0.09 / layers));
+        var k = (R - r) / r;
+        ctx.globalAlpha = 0.055;
+        ctx.beginPath();
+        for (var a = 0; a <= Math.PI * 2 * loops; a += 0.02) {
+          var x = cx + (R - r) * Math.cos(a) + d * Math.cos(k * a);
+          var y = cy + (R - r) * Math.sin(a) - d * Math.sin(k * a);
+          if (a === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function drawAll() {
+      draw(document.getElementById("g-hero"), 30, 9);
+      draw(document.getElementById("g-seal"), 22, 7);
+    }
+    drawAll();
+
+    // redraw on resize (debounced) and on theme change
+    var t;
+    window.addEventListener("resize", function () { clearTimeout(t); t = setTimeout(drawAll, 180); });
+    new MutationObserver(drawAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    if (window.matchMedia) {
+      try { window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", drawAll); } catch (e) {}
+    }
+
+    // ---- scroll reveal ----
+    var reveals = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+      reveals.forEach(function (el) { io.observe(el); });
+    } else {
+      reveals.forEach(function (el) { el.classList.add("in"); });
+    }
+  })();
+</script>
+
+</body>
+</html>
