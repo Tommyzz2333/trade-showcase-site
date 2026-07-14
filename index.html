@@ -56,8 +56,9 @@
     --v-approve:#47B58A; --v-cond:#D3AC4E; --v-hold:#E28644; --v-reject:#D95951;
   }
 
-  * { box-sizing: border-box; }
-  body { margin: 0; }
+  * { box-sizing: border-box; min-width: 0; }
+  html, body { margin: 0; max-width: 100%; overflow-x: hidden; }
+  img, svg, canvas, video { max-width: 100%; }
   .page {
     position: relative;
     background: var(--paper);
@@ -210,7 +211,7 @@
   .colo .v1.sec { font-size: 1.04rem; color: var(--ink-2); margin: .2rem 0 .3rem; display: inline-flex; align-items: baseline; gap: .5rem; }
   .colo .v1.sec::before { content: ""; width: 6px; height: 6px; background: var(--accent); transform: rotate(45deg); display: inline-block; }
   .colo .v2 { font-size: .9rem; color: var(--muted); margin: 0; line-height: 1.5; }
-  .colo a.mail { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); padding-bottom: 1px; transition: border-color .2s; font-family: var(--mono); font-size: .95rem; letter-spacing: .01em; }
+  .colo a.mail { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); padding-bottom: 1px; transition: border-color .2s; font-family: var(--mono); font-size: .95rem; letter-spacing: .01em; overflow-wrap: anywhere; }
   .colo a.mail:hover { border-color: var(--accent); }
   footer.foot { border-top: 1px solid var(--line); }
   footer.foot .wrap { display: flex; flex-wrap: wrap; gap: .6rem 1.5rem; align-items: center; justify-content: space-between; padding-top: 1.7rem; padding-bottom: 2rem; }
